@@ -29,7 +29,7 @@ void MainWindow::inputTextChanged() {
     clearOutput();
     char* inputData = (char*)malloc((MAXSIZE+1) * sizeof(char));
     strncpy(inputData, ui->plainTextEdit->toPlainText().toStdString().c_str(), MAXSIZE+1);
-    doOperation(textUpdating, &context, inputData, NULL, NULL);
+    doOperation(textUpdating, &context, inputData);
     free(inputData);
     updateLabels();
 
@@ -37,7 +37,7 @@ void MainWindow::inputTextChanged() {
 
 void MainWindow::inputNumSystemSelected() {
     context.input.numSystem = ui->comboBox->currentData().toInt();
-    doOperation(checkInputs, &context, context.input.theNumber, NULL, NULL);
+    doOperation(checkInputs, &context, context.input.theNumber);
     updateLabels();
     clearOutput();
 }
@@ -52,7 +52,7 @@ void MainWindow::onConvertClicked() {
         QMessageBox::critical(this, "Error", "Incorrect input, please update data before pushing the button.");
     char firtsOutputSym = ui->plainTextEdit_2->toPlainText().toStdString().c_str()[0];
     if (firtsOutputSym == '\0') {
-        doOperation(convert, &context, NULL, NULL, NULL);
+        doOperation(convert, &context);
         showResult();
     }
 }
@@ -74,7 +74,7 @@ void MainWindow::initAppParams() {
 void MainWindow::initializeContext() {
     int inpSys = ui->comboBox->currentData().toInt();
     int outSys = ui->comboBox_2->currentData().toInt();
-    doOperation(initialization, &context, NULL, inpSys, outSys);
+    doOperation(initialization, &context, inpSys, outSys);
 }
 
 void MainWindow::updateLabels() {
