@@ -13,7 +13,7 @@ enum Actions {
 };
 
 
-void doOperation(enum Actions action, AppContext *context, const char *newText, int inputSystem, int outputSystem);
+void doOperation(enum Actions action, AppContext *context, ...);
 
 
 #endif // ENTRYPOINT_H
