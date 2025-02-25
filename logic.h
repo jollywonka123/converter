@@ -19,7 +19,11 @@ enum numSystems {
     hexadecimal = 16,
 };
 
-extern const char allAllowedSigns[];
+enum statusFlag {
+    notFound = -1,
+    correct,
+    incorrect,
+};
 
 int isMinusInIncorrectPos(const char* newText);
 int isZerosInIncorrectPosition(const char* newText);

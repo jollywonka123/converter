@@ -14,11 +14,12 @@ qt_add_executable(lab1_op
     mainwindow.ui
 
     logic.h
-
     entrypoint.h
     appcontext.h
     logic.c
     entrypoint.c
+    my_string.c
+    my_string.h
 
 )
 

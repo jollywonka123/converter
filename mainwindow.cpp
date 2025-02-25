@@ -27,7 +27,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::inputTextChanged() {
     clearOutput();
-    char* inputData = (char*)malloc((MAXSIZE+1) * sizeof(char));
+    char* inputData;
+    doOperation(createString, &context, &inputData, MAXSIZE+1);
     strncpy(inputData, ui->plainTextEdit->toPlainText().toStdString().c_str(), MAXSIZE+1);
     doOperation(textUpdating, &context, inputData);
     free(inputData);
@@ -58,17 +59,14 @@ void MainWindow::onConvertClicked() {
 }
 
 void MainWindow::initAppParams() {
-    ui->comboBox->setItemData(0, binary);
-    ui->comboBox->setItemData(1, quaternary);
-    ui->comboBox->setItemData(2, octal);
-    ui->comboBox->setItemData(3, decimal);
-    ui->comboBox->setItemData(4, hexadecimal);
-    ui->comboBox_2->setItemData(0, binary);
-    ui->comboBox_2->setItemData(1, quaternary);
-    ui->comboBox_2->setItemData(2, octal);
-    ui->comboBox_2->setItemData(3, decimal);
-    ui->comboBox_2->setItemData(4, hexadecimal);
+    int numSystemArr[] = {binary, quaternary, octal, decimal, hexadecimal};
+    int sizeOfArr = sizeof(numSystemArr)/sizeof(numSystemArr[0]);
+    for (int i = 0; i < sizeOfArr; i++) {
+        ui->comboBox->setItemData(i, numSystemArr[i]);
+        ui->comboBox_2->setItemData(i, numSystemArr[i]);
+    }
     ui->label->setStyleSheet("QLabel { color : red; }");
+
 }
 
 void MainWindow::initializeContext() {

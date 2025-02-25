@@ -1,7 +1,7 @@
 #include "logic.h"
 #include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include "my_string.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -14,71 +14,22 @@ void updateInputText(AppContext *context, const char *newText) {
 }
 
 
-int isSubsetAlphabet(const char *str1, const char *alphabet) {
-    while (*str1) {
-        if (!strchr(alphabet, toupper(*str1))) {
-            return 0;
-        }
-        ++str1;
-    }
-    return 1;
-}
-
-//0 - correct, -1 - no minuses, 1 - incorrect
-int isMinusInIncorrectPos(const char* newText) {
-    int returnCode = 0;
-    if (newText != NULL)
-    {
-        int minusCount = 0;
-        int pointer = 0;
-        while (newText[pointer]) {
-            if (newText[pointer] == '-')
-                minusCount++;
-            pointer++;
-        }
-        if (minusCount != 0) {
-            if (minusCount > 1)
-                returnCode = 1;
-            else if (newText[0] != '-')
-                returnCode = 1;
-        }
-        else returnCode = -1;
-    }
-    return returnCode;
-}
-
-
-int isZerosInIncorrectPosition(const char* newText) {
-    int returnCode = 0;
-    if (newText != NULL)
-    {
-        int minusStatus = isMinusInIncorrectPos(newText);
-        if ((minusStatus == 0) && (newText[1] == '0'))
-            returnCode = 1;
-        else if ((minusStatus == -1) && (strlen(newText) >= 2) && (newText[0] == '0'))
-            returnCode = 1;
-    }
-    return returnCode;
-}
-
-
 char* createAdaptiveAlphabet(AppContext *context, const char* oldAlphabet) {
     char* newString = NULL;
     if (oldAlphabet != NULL) {
         int numSystem = context->input.numSystem;
-        newString = (char*)malloc((numSystem+2) * sizeof(char));
-        if (newString != NULL) {
+        createNewStr(&newString, numSystem+2, &context->Error);
+        if (context->Error != memmoryError) {
             strncpy(newString, oldAlphabet, numSystem + 1);
             newString[numSystem+1] = '\0';
         }
-        else context->Error = memmoryError;
     }
     return newString;
 }
 
 int isMoreThenMaxSize(AppContext *context, const char* newText) {
     int maxSize = MAXSIZE;
-    int returnCode = 0;
+    int returnCode = incorrect;
     if (newText != NULL)
     {
         int lenth  = strlen(newText);
@@ -86,7 +37,7 @@ int isMoreThenMaxSize(AppContext *context, const char* newText) {
         if (!isMinus)
             maxSize--;
         if (lenth > (maxSize / (int)ceil(log2(context->input.numSystem))))
-            returnCode = 1;
+            returnCode = correct;
     }
     return returnCode;
 }
@@ -96,9 +47,9 @@ void checkTextCorrect(AppContext *context, const char *newText) {
     if (newText != NULL)
     {
         char* newAlphabet = createAdaptiveAlphabet(context, allAllowedSigns);
-        if (isMoreThenMaxSize(context, newText) == 1)
+        if (isMoreThenMaxSize(context, newText) == correct)
             status = inputSizeError;
-        else if (isZerosInIncorrectPosition(newText) == 1 || isMinusInIncorrectPos(newText) == 1 || isSubsetAlphabet(newText, newAlphabet) == 0)
+        else if (isZerosInIncorrectPosition(newText) == correct || isMinusInIncorrectPos(newText) == correct || isSubsetAlphabet(newText, newAlphabet) == incorrect)
             status = wrongInpError;
         free(newAlphabet);
     }
@@ -126,12 +77,13 @@ void convertToBase(AppContext *context) {
     if ((context->input.theNumber[0] != '\0') && (context->Error == noError)) {
         char* result = context->output.outputNumber;
         int* const base = &context->output.numSystem;
-        char *buffer = (char*)malloc(MAXSIZE * sizeof(char));
+        char *buffer;
+        createNewStr(&buffer, MAXSIZE, &context->Error);
         int decimal = getDecimal(context);
         int i = 0;
-        int isNegative = 0;
+        int isNegative = incorrect;
         if (decimal < 0) {
-            isNegative = 1;
+            isNegative = correct;
             decimal = abs(decimal);
         }
         if (decimal == 0) {
@@ -144,7 +96,7 @@ void convertToBase(AppContext *context) {
             decimal /= *base;
             i++;
         }
-        if (isNegative) {
+        if (isNegative == correct) {
             buffer[i] = '-';
             i++;
         }
@@ -155,18 +107,4 @@ void convertToBase(AppContext *context) {
         free(buffer);
     }
 }
-
-void reverseString(char * str) {
-    int len = strlen(str);
-    int left = 0, right = len - 1;
-    while (left < right) {
-        char temp = str[left];
-        str[left] = str[right];
-        str[right] = temp;
-        left++;
-        right--;
-    }
-}
-
-
 

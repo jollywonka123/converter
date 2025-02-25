@@ -1,5 +1,6 @@
 #include "entrypoint.h"
 #include "logic.h"
+#include "my_string.h"
 #include <stdarg.h>
 
 
@@ -26,6 +27,12 @@ void doOperation(enum Actions action, AppContext *context, ...) {
     case convert:
         convertToBase(context);
         break;
+    case createString:
+    {
+        char** buffer = va_arg(args, char**);
+        int size = va_arg(args, int);
+        createNewStr(buffer, size, &(context->Error));
+    }
     default:
         break;
     }

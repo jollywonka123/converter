@@ -10,6 +10,7 @@ enum Actions {
     initialization,
     checkInputs,
     convert,
+    createString,
 };
 
 
